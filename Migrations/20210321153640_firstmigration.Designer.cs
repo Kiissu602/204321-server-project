@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibrarySystem.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20201030080410_Rule1")]
-    partial class Rule1
+    [Migration("20210321153640_firstmigration")]
+    partial class firstmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,10 +32,9 @@ namespace LibrarySystem.Migrations
 
                     b.Property<string>("BookName")
                         .IsRequired()
-                        .HasColumnType("varchar(70)");
+                        .HasColumnType("nvarchar(70)");
 
                     b.Property<string>("BookTypeTypeID")
-                        .IsRequired()
                         .HasColumnType("char(10)");
 
                     b.Property<int>("NumPage")
@@ -49,11 +48,11 @@ namespace LibrarySystem.Migrations
 
                     b.Property<string>("Publisher")
                         .IsRequired()
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Writer")
                         .IsRequired()
-                        .HasColumnType("varchar(70)");
+                        .HasColumnType("nvarchar(70)");
 
                     b.Property<DateTime>("YearPublic")
                         .HasColumnType("datetime2");
@@ -188,6 +187,24 @@ namespace LibrarySystem.Migrations
                     b.ToTable("Test");
                 });
 
+            modelBuilder.Entity("LibrarySystem.Models.Type", b =>
+                {
+                    b.Property<int>("TypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasColumnType("char(10)");
+
+                    b.HasKey("TypeID");
+
+                    b.HasAlternateKey("TypeName");
+
+                    b.ToTable("Type");
+                });
+
             modelBuilder.Entity("LibrarySystem.Models.User", b =>
                 {
                     b.Property<string>("PID")
@@ -229,9 +246,8 @@ namespace LibrarySystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("char(7)");
+                    b.Property<int>("TypeID")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -243,7 +259,7 @@ namespace LibrarySystem.Migrations
 
                     b.HasIndex("FacultyFnum");
 
-                    b.HasIndex("Type");
+                    b.HasIndex("TypeID");
 
                     b.HasIndex("Username")
                         .IsUnique();
@@ -255,9 +271,7 @@ namespace LibrarySystem.Migrations
                 {
                     b.HasOne("LibrarySystem.Models.BookType", "BookType")
                         .WithMany("Booklist")
-                        .HasForeignKey("BookTypeTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BookTypeTypeID");
                 });
 
             modelBuilder.Entity("LibrarySystem.Models.Borrow", b =>
@@ -291,6 +305,12 @@ namespace LibrarySystem.Migrations
                     b.HasOne("LibrarySystem.Models.Faculty", "Faculty")
                         .WithMany()
                         .HasForeignKey("FacultyFnum")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibrarySystem.Models.Type", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
